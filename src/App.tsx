@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { UserWarning } from './UserWarning';
-import { USER_ID, getTodos, addTodo, deleteTodo, updateTodo } from './api/todos';
+import {
+  USER_ID,
+  getTodos,
+  addTodo,
+  deleteTodo,
+  updateTodo,
+} from './api/todos';
 import { Todo } from './types/Todo';
 import { FilterStatus } from './types/FilterStatus';
 import { Header } from './Header/Header';
@@ -80,7 +86,7 @@ export const App: React.FC = () => {
   };
 
   const handleToggleTodo = async (todo: Todo) => {
-    setLoadingTodoIds(current => [...current, todo.id]);      
+    setLoadingTodoIds(current => [...current, todo.id]);
 
     try {
       const updatedTodo = await updateTodo({
@@ -89,16 +95,26 @@ export const App: React.FC = () => {
       });
 
       setTodos(current =>
-        current.map(item => (item.id === updatedTodo.id ?     
-  updatedTodo : item)),
+        current.map(item => (item.id === updatedTodo.id ? updatedTodo : item)),
       );
     } catch {
       setErrorMessage('Unable to update a todo');
     } finally {
-      setLoadingTodoIds(current => current.filter(id => id !==
-   todo.id));
+      setLoadingTodoIds(current => current.filter(id => id !== todo.id));
     }
   };
+
+  const handleToggleAll = () => {
+    const shouldCompleteAll = todos.some(todo => !todo.completed);       
+    const todosToUpdate = todos.filter(
+      todo => todo.completed !== shouldCompleteAll,
+    );
+
+    todosToUpdate.forEach(todo =>
+      handleToggleTodo(todo),
+    );
+  };
+
 
   const handleDeleteTodo = async (todoId: number) => {
     setLoadingTodoIds(current => [...current, todoId]);
@@ -114,9 +130,8 @@ export const App: React.FC = () => {
   };
 
   const handleClearCompleted = () => {
-    todos
-      .filter(todo => todo.completed)
-      .forEach(todo => handleDeleteTodo(todo.id));
+    const completedTodos = todos.filter(todo => todo.completed);
+    Promise.all(completedTodos.map(todo => handleDeleteTodo(todo.id))); 
   };
 
   if (!USER_ID) {
@@ -132,6 +147,7 @@ export const App: React.FC = () => {
           todos={todos}
           newTodoTitle={newTodoTitle}
           onTitleChange={setNewTodoTitle}
+          onToggleAll={handleToggleAll}
           onSubmit={handleAddTodo}
           isAdding={tempTodo !== null}
         />

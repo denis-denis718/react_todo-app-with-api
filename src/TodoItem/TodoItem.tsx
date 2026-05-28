@@ -10,8 +10,6 @@ type Props = {
   onToggle?: (todo: Todo) => void;
 };
 
-
-
 export const TodoItem: React.FC<Props> = ({
   todo,
   isProcessed = false,

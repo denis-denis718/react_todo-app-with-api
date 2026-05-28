@@ -8,6 +8,7 @@ type Props = {
   newTodoTitle: string;
   onTitleChange: (title: string) => void;
   onSubmit: (e: React.FormEvent) => void;
+  onToggleAll: () => void;
   isAdding: boolean;
 };
 
@@ -16,8 +17,10 @@ export const Header: React.FC<Props> = ({
   newTodoTitle,
   onTitleChange,
   onSubmit,
+  onToggleAll,
   isAdding,
 }) => {
+
   const inputRef = useRef<HTMLInputElement>(null);
   const allCompleted = todos.length > 0 && todos.every(todo => todo.completed);
 
@@ -32,6 +35,7 @@ export const Header: React.FC<Props> = ({
           type="button"
           className={cn('todoapp__toggle-all', { active: allCompleted })}
           data-cy="ToggleAllButton"
+          onClick={onToggleAll}
         />
       )}
 
