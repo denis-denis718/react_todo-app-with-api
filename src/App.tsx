@@ -104,17 +104,34 @@ export const App: React.FC = () => {
     }
   };
 
+  const handleRenameTodo = async( todo: Todo, newTitle: string ) => {
+    setLoadingTodoIds(current => [ ...current, todo.id ]);
+
+    try {
+      const updatedTodo = await updateTodo({
+        ...todo,
+        title: newTitle,
+      });
+
+      setTodos(current =>
+        current.map(item => (item.id === updatedTodo.id ? updatedTodo : item)),
+      );
+    } catch (error) {
+      setErrorMessage('Unable to update a todo');
+      throw error;
+    } finally {
+      setLoadingTodoIds(current => current.filter(id => id !==todo.id));
+    }
+  };
+
   const handleToggleAll = () => {
-    const shouldCompleteAll = todos.some(todo => !todo.completed);       
+    const shouldCompleteAll = todos.some(todo => !todo.completed);
     const todosToUpdate = todos.filter(
       todo => todo.completed !== shouldCompleteAll,
     );
 
-    todosToUpdate.forEach(todo =>
-      handleToggleTodo(todo),
-    );
+    todosToUpdate.forEach(todo => handleToggleTodo(todo));
   };
-
 
   const handleDeleteTodo = async (todoId: number) => {
     setLoadingTodoIds(current => [...current, todoId]);
@@ -131,7 +148,8 @@ export const App: React.FC = () => {
 
   const handleClearCompleted = () => {
     const completedTodos = todos.filter(todo => todo.completed);
-    Promise.all(completedTodos.map(todo => handleDeleteTodo(todo.id))); 
+
+    Promise.all(completedTodos.map(todo => handleDeleteTodo(todo.id)));
   };
 
   if (!USER_ID) {
@@ -160,6 +178,7 @@ export const App: React.FC = () => {
               loadingTodoIds={loadingTodoIds}
               onDelete={handleDeleteTodo}
               onToggle={handleToggleTodo}
+              onRename={handleRenameTodo}
             />
             <Footer
               todos={todos}

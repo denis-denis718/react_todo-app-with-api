@@ -8,6 +8,7 @@ type Props = {
   loadingTodoIds: number[];
   onDelete: (todoId: number) => void;
   onToggle: (todo: Todo) => void;
+  onRename: (todo: Todo, newTitle: string) => Promise<void>;
 };
 
 export const TodoList: React.FC<Props> = ({
@@ -16,6 +17,7 @@ export const TodoList: React.FC<Props> = ({
   loadingTodoIds,
   onDelete,
   onToggle,
+  onRename,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -26,6 +28,7 @@ export const TodoList: React.FC<Props> = ({
           isProcessed={loadingTodoIds.includes(todo.id)}
           onDelete={onDelete}
           onToggle={onToggle}
+          onRename={onRename}
         />
       ))}
 

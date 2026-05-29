@@ -20,7 +20,6 @@ export const Header: React.FC<Props> = ({
   onToggleAll,
   isAdding,
 }) => {
-
   const inputRef = useRef<HTMLInputElement>(null);
   const allCompleted = todos.length > 0 && todos.every(todo => todo.completed);
 
